@@ -110,80 +110,85 @@ Under `keras-nets` you can define network weights for the supported models. Sett
 
 # Using the tool
 You can access the scripts provided by the tool from the virtualenvironment by calling `deepspectrum`. The feature extraction component is provided by the subcommand `features`.
+> Вы можете получить доступ к скриптам, предоставляемым инструментом, из virtualenv, вызвав `deepspectrum`. Компонент извлечения функций предоставляется подкомандой `features`.
 
 ## Features for AVEC2018 CES
 The command below extracts features from overlapping 1 second windows spaced with a hop size of 0.1 seconds (`-t 1 0.1`) of the the file `Train_DE_01.wav`. It plots mel spectrograms (`-m mel`) and feeds them to a pre-trained VGG16 model (`-en vgg16`). The activations on the fc2 layer (`-fl fc2`) are finally written to `Train_DE_01.arff` as feature vectors in arff format. `-nl` suppresses writing any labels to the output file. The first argument after `deepspectrum features` must be the path to the audiofile(s).
+> Приведенная ниже команда извлекает объекты из перекрывающихся 1-секундных окон с интервалом в 0.1 секунды (`-t 1 0.1`) файла `Train_DE_01.wav`. Он строит спектрограммы mel (`-m mel`) и передает их на предварительно обученную модель VGG16 (` -en vgg16`). Активации на слое fc2 (`-fl fc2`) наконец записываются в `Train_DE_01.arff` как векторы объектов в формате arff.  `-nl` подавляет запись любых меток в выходной файл. Первым аргументом после `deepspectrum features` должен быть путь к аудиофайлу (файлам).
 ```bash
 deepspectrum features Train_DE_01.wav -t 1 0.1 -nl -en vgg16 -fl fc2 -m mel -o Train_DE_01.arff
 ```
 
 ## Commandline Options
 All options can also be displayed using `deepspectrum features --help`.
+> Все параметры также могут быть отображены с помощью `deepspectrum features --help`.
 ### Required options
 | Option   | Description | Default |
 |----------|-------------|---------|
-| -o, --output | The location of the output feature file. Supported output formats are: Comma separated value files and arff files. If the specified output file's extension is *.arff*, arff is chosen as format, otherwise the output will be in comma separated value format. | None |
+| -o, --output | Расположение выходного файла объектов. Поддерживаемые форматы вывода: файлы значений, разделенные запятыми, и файлы arff. Если расширение указанного выходного файла *.arff*, в качестве формата выбирается arff, в противном случае вывод будет в формате значений, разделенных запятыми. | None |
 
 
-### Extracting features from audio chunks
+### Извлечение признаков из аудио фрагментов
 | Option   | Description | Default |
 |----------|-------------|---------|
-| -t, --window-size-and-hop | Define window and hopsize for feature extraction. E.g `-t 1 0.5` extracts features from 1 second chunks every 0.5 seconds. | Extract from the whole audio file. |
-| -s, --start | Set a start time (in seconds) from which features should be extracted from the audio files. | 0 |
-| -e, --end | Set an end time until which features should be extracted from the audio files. | None |
+| -t, --window-size-and-hop | Определить окно и hopsize для извлечения признаков. E.g `-t 1 0.5` извлекает признаки из 1-секундных фрагментов каждые 0.5 секунды. | Извлечение из всего аудио файла. |
+| -s, --start | Установите время начала (в секундах), из которого признаки должны быть извлечены из аудиофайлов. | 0 |
+| -e, --end | Установите время окончания, до которого признаки должны быть извлечены из аудиофайлов. | None |
 
-### Setting parameters for the audio plots
+### Настройка параметров для звуковых графиков
 | Option   | Description | Default |
 |----------|-------------|---------|
-| -m, --mode | Type of plot to use in the system (Choose from: 'spectrogram', 'mel', 'chroma'). | spectrogram |
-| -fs, --frequency-scale | Scale for the y-axis of the plots used by the system (Choose from: 'linear', 'log' and 'mel'). This is ignored if mode=chroma or mode=mel. (default: linear)
-| -fql, --frequency-limit | Specify a limit for the y-axis in the spectrogram plot in frequency. | None |
-| -d, --delta | If specified, derivatives of the given order of the selected features are displayed in the plots used by the system. | None |
-| -nm, --number-of-melbands | Number of melbands used for computing the melspectrogram. Only takes effect with mode=mel. | 128 |
-| -nfft | The length of the FFT window used for creating the spectrograms in number of samples. Consider choosing smaller values when extracting from small segments. | The next power of two from 0.025 x sampling_rate_of_wav |
-| -cm, --colour-map | Choose a matplotlib colourmap for creating the spectrogram plots. | viridis |
+| `-m`, `--mode` | Тип графика для использования в системе (Выбор из: 'spectrogram', 'mel', 'chroma'). | spectrogram |
+| `-fs`, `--frequency-scale` | Масштаб для оси Y графиков, используемых системой (Выбор из: 'linear', 'log' и 'mel'). Игнорируется, если mode=chroma или mode=mel. (default: `linear`)
+| `-fql`, `--frequency-limit` | Предел для оси Y на графике спектрограммы по частоте. | None |
+| `-d`, `--delta` | Если указано, производные данного порядка выбранных объектов отображаются на графиках, используемых системой. | None |
+| `-nm`, `--number-of-melbands` | Количество melbands, используемыых для вычисления melspectrogram. Действует только с mode=mel. | 128 |
+| `-nfft` | Длина FFT window, используемая для создания спектрограммы в количестве образцов. Рассмотрите возможность выбора меньших значений при извлечении из небольших сегментов. | Следующая степень двойки от 0.025 x sampling_rate_of_wav |
+| `-cm`, `--colour-map` | Цветовая карта matplotlib для создания графиков спектрограмм. | `viridis` |
 
-### Parameters for the feature extractor CNN
+### Параметры для извлечения признаков CNN
 | Option   | Description | Default |
 |----------|-------------|---------|
-| -en, --extraction-network | Choose the net for feature extraction as specified in the config file | alexnet |
-| -fl, --feature-layer | Name of the layer from which features should be extracted. | fc2 |
+| `-en`, `--extraction-network` | Выберите сеть для извлечения признаков, как указано в файле конфигурации | `alexnet` |
+| `-fl`, `--feature-layer` | Название слоя, из которого должны быть извлечены признаки. | `fc2` |
 
-### Defining label information
+### Определение информации метки
 You can use csv files for label information or explicitly set a fixed label for all input files. If you use csv files, numerical features are supported (e.g. for regression). If you do neither of those, each file is assigned the name of its parent directory as label. This can be useful if your folder structure already represents the class labels, e.g.
+> Вы можете использовать CSV-файлы для метки информации или явно установить фиксированную метку для всех входных файлов. Если вы используете CSV-файлы, поддерживаются числовые признаки (например, для регрессии). Если вы не делаете ни того, ни другого, каждому файлу будет присвоено имя его родительского каталога в качестве метки. Это может быть полезно, если ваша структура директорий уже представляет метки классов, например:
 ```
 data                          Base Directory of your data
   ├─── class0                 Directory containing members of 'class0'
   |    └─── instance0.wav     Directory containing members of 'class1'
-  ├─── class1                      
-  |    └─── instance4.wav     
+  ├─── class1
+  |    └─── instance4.wav
   |    └─── ...
   └─── class2.py              Directory containing members of 'class2'
-       └─── instance20.wav  
+       └─── instance20.wav
 ```
 
 | Option   | Description | Default |
 |----------|-------------|---------|
-| -lf, --label-file | Specify a comma separated values file containing labels for each *.wav* file. It has to include a header and the first column must specify the name of the audio file (with extension!) | None |
-| -tc, --time-continuous | Set labeling of features to time continuous mode. Only works in conjunction with -t and the specified label file has to provide labels for the specified hops in its second column. | False |
-| -el, --explicit-label | Specify a single label that will be used for every input file explicitly. | None |
-| -nts, --no-timestamps | Remove timestamps from the output. | Write timestamps in feature file. |
-| -nl, --no-labels | Remove labels from the output. | Write labels in feature file. |
+| `-lf`, `--label-file` | Указать целевой файл через запятую, содержащий метки для каждого файла *.wav*. Он должен содержать заголовок, а в первом столбце должно быть указано имя аудиофайла (с расширением!) | `None` |
+| `-tc`, `--time-continuous` | Установить маркировку признаков в режиме непрерывного времени. Работает только в сочетании с `-t`, и указанный файл меток должен предоставлять метки для указанных прыжков во втором столбце. | `False` |
+| `-el`, `--explicit-label` | Указать одну метку, которая будет явно использоваться для каждого входного файла. | `None` |
+| `-nts`, `--no-timestamps` | Удалить метки времени с выхода. | Write timestamps in feature file. |
+| `-nl`, `--no-labels` | Удалить метки из вывода. | Write labels in feature file. |
 
-### Additional output 
+### Additional output
 | Option   | Description | Default |
 |----------|-------------|---------|
-| -so, --spectrogram-out | Specify a folder to save the plots used during extraction as .pngs | None |
-| -wo, --wav-out | Convenience function to write the chunks of audio data used in the extraction to the specified folder. | None |
+| `-so`, `--spectrogram-out` | Указать директорию где сохранять графики, используемых при извлечении, в формате `.png`. | `None` |
+| `-wo`, `--wav-out` | Удобная функция для записи фрагментов аудиоданных, используемых при извлечении, в указанную папку. | `None` |
 
 ### Configuration and Help
 | Option   | Description | Default |
 |----------|-------------|---------|
-| -np, --number-of-processes | Specify the number of processes used for the extraction. Defaults to the number of available CPU cores | None |
-| -c, --config | The path to the configuration file used by the program can be given here. If the file does not exist yet, it is created and filled with standard settings. | deep.conf |
-| --help | Show help. | None |
+| `-np`, `--number-of-processes` | Указать количество процессов, используемых для извлечения. По умолчанию количество доступных процессорных ядер | `None` |
+| `-c`, `--config` | Путь к файлу конфигурации, используемому программой, можно указать здесь. Если файл еще не существует, он создается и заполняется стандартными настройками. | `deep.conf` |
+| `--help` | Show help. | `None` |
 
 
 ### Extracting CNN-Descriptors from images
 
 The tool also provides a commandline utility for extracting CNN descriptors from image data. It can be accessed through `deepspectrum image-features` with a reduced set of options. As with `deepspectrum features`, the first argument should be a folder containing the input image files (.png or .jpg). The available options are: `-o`, `-c`, `-np`, `-en`, `-fl`, `-bs`, `-lf`, `-el`,`-nl` and `--help`. These function the same as described above for `deepspectrum features`.
+> Инструмент также предоставляет утилиту командной строки для извлечения дескрипторов CNN из данных изображения. Доступ к нему можно получить через `deepspectrum image-features` с ограниченным набором опций. Как и в случае с `deepspectrum features`, первым аргументом должен быть путь до директории, содержащей входные файлы изображений (`.png` или `.jpg`). Доступные параметры: `-o`, `-c`, `-np`, `-en`, `-fl`, `-bs`, `-lf`, `-el`, `-nl` и `--help`. Они функционируют так же, как описано выше для «функций deepspectrum».
